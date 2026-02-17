@@ -12,15 +12,16 @@ const ROLES = [
 export default function FamilySetup({ onSave, onCancel, user, initialData }) {
     const [startFY, setStartFY] = useState(initialData?.startFY || (new Date().getMonth() < 3 ? new Date().getFullYear() - 1 : new Date().getFullYear()));
     const [members, setMembers] = useState(initialData?.members || [
-        { id: crypto.randomUUID(), name: '', birthYear: 1980, birthMonth: 1, role: 'parent' },
-        { id: crypto.randomUUID(), name: '', birthYear: 2015, birthMonth: 4, role: 'child' }
+        { id: 'init-1', name: '', birthYear: 1980, birthMonth: 1, role: 'parent' },
+        { id: 'init-2', name: '', birthYear: 2015, birthMonth: 4, role: 'child' }
     ]);
     const [isSaving, setIsSaving] = useState(false);
 
     const db = getFirestore();
 
     const handleAddMember = () => {
-        setMembers([...members, { id: crypto.randomUUID(), name: '', birthYear: 2020, birthMonth: 1, role: 'child' }]);
+        const newId = `mem_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        setMembers([...members, { id: newId, name: '', birthYear: 2020, birthMonth: 1, role: 'child' }]);
     };
 
     const handleRemoveMember = (id) => {
