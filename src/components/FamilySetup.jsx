@@ -4,9 +4,11 @@ import { User, Users, Calendar, Save, Plus, Trash2, Baby, GraduationCap, Briefca
 import { appId } from '../config';
 
 const ROLES = [
-    { id: 'parent', label: '親', icon: Briefcase },
+    { id: 'parent', label: '親 (本人・配偶者)', icon: Briefcase },
     { id: 'child', label: '子供', icon: Baby },
-    { id: 'student', label: '学生', icon: GraduationCap },
+    { id: 'grandchild', label: '孫', icon: Baby },
+    { id: 'grandparent', label: '親 (自分の親)', icon: User },
+    { id: 'grandparent_in_law', label: '義理の親', icon: User },
 ];
 
 export default function FamilySetup({ onSave, onCancel, user, initialData }) {
@@ -153,8 +155,8 @@ export default function FamilySetup({ onSave, onCancel, user, initialData }) {
                                         </select>
                                     </div>
 
-                                    {/* Education Path (Child/Student only) */}
-                                    {(member.role === 'child' || member.role === 'student') && (
+                                    {/* Education Path (Child/Student/Grandchild only) */}
+                                    {(member.role === 'child' || member.role === 'student' || member.role === 'grandchild') && (
                                         <div className="md:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 border-t border-slate-50 pt-2">
                                             <div>
                                                 <label className="text-[10px] font-bold text-slate-300 block mb-1">教育・進路プラン</label>

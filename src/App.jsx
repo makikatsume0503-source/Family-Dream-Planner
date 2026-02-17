@@ -181,7 +181,7 @@ function App() {
       const memberData = familyProfile.members.map(m => ({
         ...m,
         age: getAgeInFY(m.birthYear, fy),
-        grade: m.role === 'child' || m.role === 'student' ? getGrade(m, fy) : null
+        grade: (m.role === 'child' || m.role === 'student' || m.role === 'grandchild') ? getGrade(m, fy) : null
       }));
 
       data.push({
@@ -248,8 +248,8 @@ function App() {
     const batchPromises = [];
 
     familyProfile.members.forEach(member => {
-      // School Events (Child/Student only)
-      if (member.role === 'child' || member.role === 'student') {
+      // School Events (Child/Student/Grandchild only)
+      if (member.role === 'child' || member.role === 'student' || member.role === 'grandchild') {
         const isEarlyBird = member.birthMonth <= 3;
         // 小学校入学 (Grade 1 starts April of this year)
         const elemEntranceFY = isEarlyBird ? member.birthYear + 6 : member.birthYear + 7;
@@ -485,7 +485,7 @@ function App() {
                         <span className="opacity-50 text-[10px]">{member.gender === 'male' ? '👨' : member.gender === 'female' ? '👩' : ''}</span>
                       </div>
 
-                      {member.role === 'child' || member.role === 'student' ? (
+                      {member.role === 'child' || member.role === 'student' || member.role === 'grandchild' ? (
                         <>
                           <div className={`text-lg font-black ${member.gender === 'male' ? 'text-blue-700' : member.gender === 'female' ? 'text-rose-700' : 'text-slate-700'
                             }`}>{member.grade}</div>
