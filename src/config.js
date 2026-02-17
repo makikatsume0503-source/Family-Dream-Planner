@@ -2,12 +2,12 @@
 // Handles global variables (injected) or environment variables/fallbacks
 
 const defaultFirebaseConfig = {
-    apiKey: "AIzaSyDdX6NFkS0QQkAQ-g_zGjszyJJsCqA-Ahw",
+    apiKey: "change-me",
     authDomain: "family-dream-planner.firebaseapp.com",
     projectId: "family-dream-planner",
     storageBucket: "family-dream-planner.firebasestorage.app",
     messagingSenderId: "967094599073",
-    appId: "1:967094599073:web:1271591d4bea1f785c9fe0"
+    appId: "change-me"
 };
 
 let firebaseConfigToUse = defaultFirebaseConfig;

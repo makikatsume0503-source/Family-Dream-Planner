@@ -115,16 +115,54 @@ function App() {
     for (let i = 0; i < 20; i++) {
       const fy = startFY + i;
 
-      const getGrade = (birthYear, birthMonth, currentFY) => {
-        const isEarlyBird = birthMonth <= 3;
-        const entranceFY = isEarlyBird ? birthYear + 6 : birthYear + 7;
-        const yearsSinceEntrance = currentFY - entranceFY + 1;
+      const getGrade = (member, currentFY) => {
+        const { birthYear, birthMonth, educationPath = 'university_4yr', gapYears = 0 } = member;
 
-        if (yearsSinceEntrance < 1) return "未就学";
-        if (yearsSinceEntrance <= 6) return `小${yearsSinceEntrance}`;
-        if (yearsSinceEntrance <= 9) return `中${yearsSinceEntrance - 6}`;
-        if (yearsSinceEntrance <= 12) return `高${yearsSinceEntrance - 9}`;
-        if (yearsSinceEntrance <= 16) return `大${yearsSinceEntrance - 12}`;
+        const isEarlyBird = birthMonth <= 3;
+        const elemEntranceFY = isEarlyBird ? birthYear + 6 : birthYear + 7;
+        const yearsSinceElemEntrance = currentFY - elemEntranceFY + 1;
+
+        if (yearsSinceElemEntrance < 1) return "未就学";
+        if (yearsSinceElemEntrance <= 6) return `小${yearsSinceElemEntrance}`;
+        if (yearsSinceElemEntrance <= 9) return `中${yearsSinceElemEntrance - 6}`;
+        if (yearsSinceElemEntrance <= 12) return `高${yearsSinceElemEntrance - 9}`;
+
+        // Post-High School Logic with Gap Years
+        const postHSYear = yearsSinceElemEntrance - 12; // 1 = 1st year after HS
+
+        // Gap Year Phase
+        if (postHSYear <= gapYears) {
+          return "浪人中";
+        }
+
+        // University/College/Work Phase
+        const academicYear = postHSYear - gapYears;
+
+        if (educationPath === 'high_school_grad') return "社会人";
+
+        if (educationPath === 'vocational_2yr') {
+          if (academicYear <= 2) return `短/専${academicYear}`;
+          return "社会人";
+        }
+
+        if (educationPath === 'university_4yr') {
+          if (academicYear <= 4) return `大${academicYear}`;
+          return "社会人";
+        }
+
+        if (educationPath === 'university_6yr') {
+          if (academicYear <= 6) return `大${academicYear}`;
+          return "社会人";
+        }
+
+        if (educationPath === 'grad_masters') {
+          if (academicYear <= 4) return `大${academicYear}`;
+          if (academicYear <= 6) return `院(修)${academicYear - 4}`;
+          return "社会人";
+        }
+
+        // Fallback
+        if (academicYear <= 4) return `大${academicYear}`;
         return "社会人";
       };
 
@@ -143,7 +181,7 @@ function App() {
       const memberData = familyProfile.members.map(m => ({
         ...m,
         age: getAgeInFY(m.birthYear, fy),
-        grade: m.role === 'child' || m.role === 'student' ? getGrade(m.birthYear, m.birthMonth, fy) : null
+        grade: m.role === 'child' || m.role === 'student' ? getGrade(m, fy) : null
       }));
 
       data.push({

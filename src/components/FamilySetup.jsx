@@ -45,7 +45,9 @@ export default function FamilySetup({ onSave, onCancel, user, initialData }) {
                 members: members.map(m => ({
                     ...m,
                     birthYear: parseInt(m.birthYear),
-                    birthMonth: parseInt(m.birthMonth)
+                    birthMonth: parseInt(m.birthMonth),
+                    educationPath: m.educationPath || 'university_4yr',
+                    gapYears: m.gapYears || 0,
                 })),
                 updatedAt: new Date().toISOString(),
                 updatedBy: user?.uid
@@ -150,6 +152,36 @@ export default function FamilySetup({ onSave, onCancel, user, initialData }) {
                                             ))}
                                         </select>
                                     </div>
+
+                                    {/* Education Path (Child/Student only) */}
+                                    {(member.role === 'child' || member.role === 'student') && (
+                                        <div className="md:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 border-t border-slate-50 pt-2">
+                                            <div>
+                                                <label className="text-[10px] font-bold text-slate-300 block mb-1">教育・進路プラン</label>
+                                                <select
+                                                    value={member.educationPath || 'university_4yr'}
+                                                    onChange={(e) => updateMember(member.id, 'educationPath', e.target.value)}
+                                                    className="w-full font-bold text-slate-700 outline-none bg-slate-50 rounded-lg p-2 text-xs"
+                                                >
+                                                    <option value="university_4yr">4年制大学 (標準)</option>
+                                                    <option value="grad_masters">大学院 (修士 +2年)</option>
+                                                    <option value="university_6yr">医・薬学部 (6年)</option>
+                                                    <option value="vocational_2yr">短大・専門 (2年)</option>
+                                                    <option value="high_school_grad">高校卒業で就職</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] font-bold text-slate-300 block mb-1">浪人・留年数 (年)</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={member.gapYears || 0}
+                                                    onChange={(e) => updateMember(member.id, 'gapYears', parseInt(e.target.value) || 0)}
+                                                    className="w-full font-bold text-slate-700 outline-none bg-slate-50 rounded-lg p-2 text-xs"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {/* Gender Selection */}
                                     <div className="md:col-span-12 mt-2 border-t border-slate-50 pt-2 flex items-center gap-4">
