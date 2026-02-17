@@ -372,7 +372,7 @@ function App() {
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans p-4 pb-20">
       {/* Header */}
-      <header className="max-w-4xl mx-auto mb-10 pt-8 flex items-center justify-between">
+      <header className="max-w-4xl mx-auto mb-10 pt-8 flex items-center justify-between relative z-10">
         <div className="flex-1"></div>
         <div className="text-center">
           <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-4">
@@ -382,24 +382,24 @@ function App() {
             家族のドリーム・プランナー <span className="text-indigo-600">年度版</span>
           </h1>
         </div>
-        <div className="flex-1 flex justify-end items-start h-full gap-2">
+        <div className="flex-1 flex justify-end items-center gap-2">
           <button
             onClick={handleAutoGenerateEvents}
-            className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-slate-100 rounded-xl transition-all"
+            className="p-3 bg-white text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm rounded-xl transition-all active:scale-95"
             title="ライフイベント自動生成"
           >
             <Wand2 size={20} />
           </button>
           <button
             onClick={() => setIsEditingProfile(true)}
-            className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-slate-100 rounded-xl transition-all"
+            className="p-3 bg-white text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm rounded-xl transition-all active:scale-95"
             title="家族設定"
           >
             <Settings size={20} />
           </button>
           <button
             onClick={handleLogout}
-            className="p-2 text-slate-300 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+            className="p-3 bg-white text-slate-400 hover:text-slate-600 hover:bg-slate-50 shadow-sm rounded-xl transition-all active:scale-95"
             title="ログアウト"
           >
             <LogOut size={20} />
