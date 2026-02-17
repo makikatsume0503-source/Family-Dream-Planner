@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Family Dream Planner Rules
+    
+    // Public Data (Dreams, Family Profile)
+    // In a real production app, you might want to restrict this to authenticated users only.
+    // For now, allowing read/write for demo purposes, but recommending auth check.
+    
+    match /artifacts/{appId}/public/settings/familyProfile {
+      allow read, write: if true; 
+    }
+    
+    match /artifacts/{appId}/public/data/dreams/{dreamId} {
+      allow read, write: if true;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
