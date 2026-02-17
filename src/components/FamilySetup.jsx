@@ -52,7 +52,7 @@ export default function FamilySetup({ onSave, user }) {
             if (onSave) onSave();
         } catch (error) {
             console.error("Error saving profile:", error);
-            alert("Project ID mismatch or permission error. Check config.js");
+            alert(`Error: ${error.message}\n(App ID: ${appId})`);
         } finally {
             setIsSaving(false);
         }
