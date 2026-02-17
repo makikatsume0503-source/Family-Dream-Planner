@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn, Settings } from 'lucide-react';
+import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn, Settings, Edit2 } from 'lucide-react';
 import { firebaseConfig, appId } from './config';
 import FamilySetup from './components/FamilySetup';
 
@@ -28,6 +28,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFY, setSelectedFY] = useState(null);
   const [newDream, setNewDream] = useState({ title: '', category: 'life', description: '', month: 4 });
+  const [editingDreamId, setEditingDreamId] = useState(null);
 
   // Dynamic Family Data
   const [familyProfile, setFamilyProfile] = useState(null);
@@ -154,23 +155,47 @@ function App() {
     return data;
   }, [familyProfile, dreams]);
 
-  const handleAddDream = async () => {
+  const handleEditDream = (dream) => {
+    setNewDream({
+      title: dream.title,
+      category: dream.category,
+      description: dream.description || '',
+      month: dream.month
+    });
+    setSelectedFY(dream.fy);
+    setEditingDreamId(dream.id);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveDream = async () => {
     if (!newDream.title || !user) return;
     try {
       if (!appId || !firebaseConfig || firebaseConfig.apiKey === 'change-me') {
         alert("Firebase not configured properly. Cannot save.");
         return;
       }
-      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'dreams'), {
-        ...newDream,
-        fy: selectedFY,
-        createdAt: new Date().toISOString(),
-        userId: user.uid
-      });
+
+      if (editingDreamId) {
+        // Update existing dream
+        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'dreams', editingDreamId), {
+          ...newDream,
+          updatedAt: new Date().toISOString()
+        });
+      } else {
+        // Create new dream
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'dreams'), {
+          ...newDream,
+          fy: selectedFY,
+          createdAt: new Date().toISOString(),
+          userId: user.uid
+        });
+      }
+
       setIsModalOpen(false);
       setNewDream({ title: '', category: 'life', description: '', month: 4 });
+      setEditingDreamId(null);
     } catch (e) {
-      console.error("Add error:", e);
+      console.error("Save error:", e);
       alert("Failed to save dream: " + e.message);
     }
   };
@@ -324,12 +349,22 @@ function App() {
                             {dream.description && <p className="text-xs text-slate-500 mt-1">{dream.description}</p>}
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleDeleteDream(dream.id)}
-                          className="text-slate-200 hover:text-red-400 transition-colors p-2"
-                        >
-                          <Trash2 size={20} />
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditDream(dream)}
+                            className="text-slate-200 hover:text-indigo-400 transition-colors p-2"
+                            title="編集"
+                          >
+                            <Edit2 size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteDream(dream.id)}
+                            className="text-slate-200 hover:text-red-400 transition-colors p-2"
+                            title="削除"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
@@ -357,9 +392,14 @@ function App() {
                 <h2 className="text-2xl font-black text-slate-900">
                   {selectedFY}年度の予定
                 </h2>
-                <p className="text-slate-400 text-xs font-bold mt-1 tracking-widest uppercase">Planning New Dream</p>
+                <p className="text-slate-400 text-xs font-bold mt-1 tracking-widest uppercase">
+                  {editingDreamId ? 'EDITING DREAM' : 'PLANNING NEW DREAM'}
+                </p>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="bg-slate-100 p-2 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
+              <button
+                onClick={() => { setIsModalOpen(false); setEditingDreamId(null); }}
+                className="bg-slate-100 p-2 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
+              >
                 <X size={24} />
               </button>
             </div>
@@ -415,12 +455,12 @@ function App() {
               </div>
 
               <button
-                onClick={handleAddDream}
+                onClick={handleSaveDream}
                 disabled={!newDream.title}
                 className="w-full bg-indigo-600 text-white font-black py-5 rounded-[1.8rem] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-95 disabled:opacity-30 flex items-center justify-center gap-3 text-lg"
               >
                 <Save size={24} />
-                年度プランに保存
+                {editingDreamId ? '変更を保存' : '年度プランに保存'}
               </button>
             </div>
           </div>
