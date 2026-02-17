@@ -39,7 +39,7 @@ export default function FamilySetup({ onSave, user }) {
 
         setIsSaving(true);
         try {
-            await setDoc(doc(db, 'artifacts', appId, 'public', 'settings', 'familyProfile'), {
+            await setDoc(doc(db, 'artifacts', appId, 'settings', 'familyProfile'), {
                 startFY: parseInt(startFY),
                 members: members.map(m => ({
                     ...m,

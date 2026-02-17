@@ -72,7 +72,7 @@ function App() {
 
     const fetchProfile = async () => {
       try {
-        const docRef = doc(db, 'artifacts', appId, 'public', 'settings', 'familyProfile');
+        const docRef = doc(db, 'artifacts', appId, 'settings', 'familyProfile');
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setFamilyProfile(docSnap.data());
@@ -282,8 +282,8 @@ function App() {
                     <div
                       key={member.id}
                       className={`p-3 rounded-2xl border ${member.role === 'child' || member.role === 'student'
-                          ? 'bg-blue-50/40 border-blue-100'
-                          : 'bg-slate-50 border-slate-100'
+                        ? 'bg-blue-50/40 border-blue-100'
+                        : 'bg-slate-50 border-slate-100'
                         }`}
                     >
                       <div className={`text-[9px] font-black uppercase tracking-widest ${member.role === 'child' ? 'text-blue-500' : 'text-slate-400'
@@ -373,8 +373,8 @@ function App() {
                       key={m}
                       onClick={() => setNewDream({ ...newDream, month: m })}
                       className={`py-3 rounded-2xl text-sm font-black transition-all border-2 ${newDream.month === m
-                          ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-200'
-                          : 'bg-white border-slate-100 text-slate-400 hover:bg-slate-50'
+                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-200'
+                        : 'bg-white border-slate-100 text-slate-400 hover:bg-slate-50'
                         }`}
                     >
                       {m}月
@@ -402,8 +402,8 @@ function App() {
                       key={cat.id}
                       onClick={() => setNewDream({ ...newDream, category: cat.id })}
                       className={`flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all ${newDream.category === cat.id
-                          ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm'
-                          : 'border-slate-50 text-slate-400 hover:bg-slate-50'
+                        ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm'
+                        : 'border-slate-50 text-slate-400 hover:bg-slate-50'
                         }`}
                     >
                       <cat.icon size={24} />

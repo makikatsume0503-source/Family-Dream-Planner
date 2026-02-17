@@ -7,7 +7,7 @@ service cloud.firestore {
     // In a real production app, you might want to restrict this to authenticated users only.
     // For now, allowing read/write for demo purposes, but recommending auth check.
     
-    match /artifacts/{appId}/public/settings/familyProfile {
+    match /artifacts/{appId}/settings/familyProfile {
       allow read, write: if true; 
     }
     
