@@ -356,6 +356,18 @@ function App() {
     return <FamilySetup onSave={() => window.location.reload()} user={user} />;
   }
 
+  // 4. Edit Profile Mode
+  if (isEditingProfile) {
+    return (
+      <FamilySetup
+        user={user}
+        initialData={familyProfile}
+        onSave={() => window.location.reload()}
+        onCancel={() => setIsEditingProfile(false)}
+      />
+    );
+  }
+
   // 4. Main App
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans p-4 pb-20">
