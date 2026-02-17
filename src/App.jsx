@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn, Settings, Edit2 } from 'lucide-react';
+import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn, Settings, Edit2, Wand2 } from 'lucide-react';
 import { firebaseConfig, appId } from './config';
 import FamilySetup from './components/FamilySetup';
 
@@ -200,6 +200,107 @@ function App() {
     }
   };
 
+  const handleAutoGenerateEvents = async () => {
+    if (!familyProfile || !user) return;
+    if (!confirm("家族の年齢に基づいて、入学・卒業などのライフイベントを自動生成しますか？\n（既存のデータは消えませんが、重複する可能性があります）")) return;
+
+    setIsModalOpen(false); // Close other modals if open
+
+    const newEvents = [];
+    const batchPromises = [];
+
+    familyProfile.members.forEach(member => {
+      // School Events (Child/Student only)
+      if (member.role === 'child' || member.role === 'student') {
+        const isEarlyBird = member.birthMonth <= 3;
+        // 小学校入学 (Grade 1 starts April of this year)
+        const elemEntranceFY = isEarlyBird ? member.birthYear + 6 : member.birthYear + 7;
+
+        const schoolEvents = [
+          { fy: elemEntranceFY, title: `${member.name} 小学校入学`, category: 'education', month: 4 },
+          { fy: elemEntranceFY + 6, title: `${member.name} 小学校卒業`, category: 'education', month: 3 },
+          { fy: elemEntranceFY + 6, title: `${member.name} 中学校入学`, category: 'education', month: 4 },
+          { fy: elemEntranceFY + 9, title: `${member.name} 中学校卒業`, category: 'education', month: 3 },
+          { fy: elemEntranceFY + 9, title: `${member.name} 高校入学`, category: 'education', month: 4 },
+          { fy: elemEntranceFY + 12, title: `${member.name} 高校卒業`, category: 'education', month: 3 },
+          { fy: elemEntranceFY + 12, title: `${member.name} 大学入学`, category: 'education', month: 4 },
+          { fy: elemEntranceFY + 16, title: `${member.name} 大学卒業`, category: 'education', month: 3 },
+        ];
+
+        schoolEvents.forEach(evt => newEvents.push(evt));
+
+        // Coming of Age (20 years old)
+        // 2022年4月1日から18歳成人ですが、式典は20歳が多いので一旦20歳で設定
+        const comingOfAgeFY = isEarlyBird ? member.birthYear + 20 : member.birthYear + 20;
+        // Example: Born 2000/04 -> 2021/01 (FY2020) :: 20yo 
+        // Actually Coming of Age day is January. 
+        // Born April 2, 2000 -> Turns 20 on April 2, 2020. Ceremony Jan 2021 (FY2020).
+        // Born Mar 30, 2001 -> Turns 20 on Mar 30, 2021. Ceremony Jan 2021 (FY2020).
+        // Logic: The FY they turn 20.
+        // FY starts April YYYY. Ends Mar YYYY+1.
+        // Ceremony is Jan YYYY+1. 
+        // So it is the FY where: FY = BirthYear + 20 (if born Apr-Dec) or BirthYear + 19 (if born Jan-Mar)?
+        // Wait. Born 2000 (Apr) -> FY2020 (turns 20). Jan 2021 is in FY2020. Correct.
+        // Born 2001 (Mar) -> FY2020 (turns 20). Jan 2021 is in FY2020. Correct.
+        // So distinct from school year logic? 
+        // Early bird (Jan-Mar 2001) belongs to School Year starting Apr 2000. 
+        // But age-wise, they turn 20 in 2021. 
+        // Let's iterate simply by age for non-school events.
+
+        // Actually, simplest is: Ceremony is usually the Jan of the FY they turn 20.
+        // Born April 2000 -> 20 years old in April 2020. FY2020. Jan 2021 (FY2020).
+        // Born March 2001 -> 20 years old in March 2021. FY2020. Jan 2021 (FY2020).
+        // Yes, so it is roughly BirthYear + 20 (if Apr-Dec) or BirthYear + 19 (if Jan-Mar)?
+        // No, let's look at Grade.
+        // Grade 1: 6-7 years old.
+        // 20 years old is roughly 14 years after Grade 1 entry?
+        // Elem Entrance (6) -> +14 = 20. 
+        // So elemEntranceFY + 14 is the FY they turn 20 (for school year cohort).
+        newEvents.push({
+          fy: elemEntranceFY + 13, // 19-20 years old? Wait.
+          // Entrance (6) -> 1(7) -> 2(8)...
+          // Grade 1 = 6-7.
+          // Grade 14 = 19-20. (University 2nd year).
+          // Coming of Age is usually 20. 
+          // Let's put it at 20 years old.
+          title: `${member.name} 成人式`, category: 'life', month: 1
+        });
+      }
+
+      // Longevity Celebrations
+      // Kanreki (60)
+      // Born 1960 -> 60 in 2020. FY2020.
+      const kanrekiFY = member.birthMonth <= 3 ? member.birthYear + 60 - 1 : member.birthYear + 60;
+      if (kanrekiFY >= (familyProfile.startFY || 2024)) {
+        newEvents.push({ fy: kanrekiFY, title: `${member.name} 還暦(60歳)`, category: 'life', month: member.birthMonth });
+      }
+    });
+
+    try {
+      // Filter existing to avoid exact duplicates? (Simple check)
+      // For now just add. User can delete.
+
+      const promises = newEvents.map(evt => {
+        // Only add if within display range (StartFY to StartFY+20)
+        const startFY = familyProfile.startFY || new Date().getFullYear();
+        if (evt.fy >= startFY && evt.fy < startFY + 20) {
+          return addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'dreams'), {
+            ...evt,
+            createdAt: new Date().toISOString(),
+            userId: user.uid
+          });
+        }
+        return Promise.resolve();
+      });
+
+      await Promise.all(promises);
+      alert(`${promises.length}件のイベントを作成しました！`);
+    } catch (e) {
+      console.error("Auto generate error:", e);
+      alert("Error: " + e.message);
+    }
+  };
+
   const handleDeleteDream = async (id) => {
     try {
       await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'dreams', id));
@@ -269,7 +370,21 @@ function App() {
             家族のドリーム・プランナー <span className="text-indigo-600">年度版</span>
           </h1>
         </div>
-        <div className="flex-1 flex justify-end items-start h-full">
+        <div className="flex-1 flex justify-end items-start h-full gap-2">
+          <button
+            onClick={handleAutoGenerateEvents}
+            className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-slate-100 rounded-xl transition-all"
+            title="ライフイベント自動生成"
+          >
+            <Wand2 size={20} />
+          </button>
+          <button
+            onClick={() => setIsEditingProfile(true)}
+            className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-slate-100 rounded-xl transition-all"
+            title="家族設定"
+          >
+            <Settings size={20} />
+          </button>
           <button
             onClick={handleLogout}
             className="p-2 text-slate-300 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
@@ -308,10 +423,10 @@ function App() {
                     <div
                       key={member.id}
                       className={`p-3 rounded-2xl border transition-colors ${member.gender === 'male'
-                          ? 'bg-blue-50/50 border-blue-100 hover:border-blue-200'
-                          : member.gender === 'female'
-                            ? 'bg-rose-50/50 border-rose-100 hover:border-rose-200'
-                            : 'bg-slate-50 border-slate-100'
+                        ? 'bg-blue-50/50 border-blue-100 hover:border-blue-200'
+                        : member.gender === 'female'
+                          ? 'bg-rose-50/50 border-rose-100 hover:border-rose-200'
+                          : 'bg-slate-50 border-slate-100'
                         }`}
                     >
                       <div className={`text-[9px] font-black uppercase tracking-widest flex justify-between items-center ${member.gender === 'male' ? 'text-blue-400' : member.gender === 'female' ? 'text-rose-400' : 'text-slate-400'
