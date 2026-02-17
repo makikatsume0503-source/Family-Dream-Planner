@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon } from 'lucide-react';
-import { firebaseConfig, appId, initialAuthToken } from './config';
+import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn } from 'lucide-react';
+import { firebaseConfig, appId } from './config';
 import FamilySetup from './components/FamilySetup';
 
 // --- Firebase Configuration ---
-// Config is now imported from config.js
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -32,30 +31,43 @@ function App() {
 
   // Dynamic Family Data
   const [familyProfile, setFamilyProfile] = useState(null);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
   // --- Authentication ---
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        if (initialAuthToken) {
-          await signInWithCustomToken(auth, initialAuthToken);
-        } else {
-          await signInAnonymously(auth);
-        }
-      } catch (error) {
-        console.error("Auth error:", error);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setIsLoadingProfile(true);
+      } else {
+        setFamilyProfile(null);
+        setDreams([]);
       }
-    };
-    initAuth();
-    const unsubscribe = onAuthStateChanged(auth, setUser);
+    });
     return () => unsubscribe();
   }, []);
 
+  // --- Login / Logout Handlers ---
+  const handleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("ログインに失敗しました: " + error.message);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   // --- Fetch Family Profile ---
   useEffect(() => {
-    // Check for family profile regardless of auth state (public read mostly, or wait for auth if rules require)
-    // For now, assuming public read or auth ready.
     if (!user) return;
 
     const fetchProfile = async () => {
@@ -115,7 +127,6 @@ function App() {
       };
 
       const getAgeInFY = (birthYear, currentFY) => {
-        // Simple age: Age turned in that year (or FY end)
         return currentFY - birthYear;
       };
 
@@ -173,6 +184,38 @@ function App() {
 
   // --- Rendering ---
 
+  // 1. Not Logged In
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-[2.5rem] shadow-xl max-w-md w-full text-center space-y-8">
+          <div className="inline-flex items-center justify-center p-6 bg-indigo-50 rounded-full mb-2">
+            <Target className="text-indigo-600" size={48} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black text-slate-900 mb-2">家族のドリーム・プランナー</h1>
+            <p className="text-slate-500 text-sm">家族の未来を、みんなで描こう。</p>
+          </div>
+
+          <button
+            onClick={handleLogin}
+            className="w-full bg-white border-2 border-slate-100 py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-50 hover:border-slate-200 transition-all group"
+          >
+            <LogIn className="text-slate-400 group-hover:text-indigo-500 transition-colors" size={20} />
+            <span className="font-bold text-slate-600 group-hover:text-slate-800">Googleでログイン</span>
+          </button>
+
+          {firebaseConfig.apiKey === 'change-me' && (
+            <div className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl">
+              Demo Mode: Config not set.
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Loading Profile
   if (isLoadingProfile && !familyProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -181,27 +224,41 @@ function App() {
     );
   }
 
-  // Show Setup if no profile
+  // 3. Setup (User logged in, but no profile)
   if (!familyProfile) {
     return <FamilySetup onSave={() => window.location.reload()} user={user} />;
   }
 
+  // 4. Main App
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans p-4 pb-20">
       {/* Header */}
-      <header className="max-w-4xl mx-auto mb-10 text-center pt-8">
-        <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-4">
-          <Target className="text-indigo-600" size={32} />
-        </div>
-        <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-          家族のドリーム・プランナー <span className="text-indigo-600">年度版</span>
-        </h1>
-        {firebaseConfig.apiKey === 'change-me' && (
-          <div className="mt-4 p-3 bg-amber-50 rounded-lg text-amber-800 text-sm border border-amber-200 inline-block">
-            ⚠️ Demo Mode: Update src/config.js to connect to your database.
+      <header className="max-w-4xl mx-auto mb-10 pt-8 flex items-center justify-between">
+        <div className="flex-1"></div>
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-4">
+            <Target className="text-indigo-600" size={32} />
           </div>
-        )}
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+            家族のドリーム・プランナー <span className="text-indigo-600">年度版</span>
+          </h1>
+        </div>
+        <div className="flex-1 flex justify-end items-start h-full">
+          <button
+            onClick={handleLogout}
+            className="p-2 text-slate-300 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+            title="ログアウト"
+          >
+            <LogOut size={20} />
+          </button>
+        </div>
       </header>
+
+      {firebaseConfig.apiKey === 'change-me' && (
+        <div className="max-w-md mx-auto mb-8 p-3 bg-amber-50 rounded-lg text-amber-800 text-sm border border-amber-200 text-center">
+          ⚠️ Demo Mode: Update src/config.js
+        </div>
+      )}
 
       {/* Main Timeline */}
       <div className="max-w-4xl mx-auto space-y-6">
@@ -316,8 +373,8 @@ function App() {
                       key={m}
                       onClick={() => setNewDream({ ...newDream, month: m })}
                       className={`py-3 rounded-2xl text-sm font-black transition-all border-2 ${newDream.month === m
-                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-200'
-                        : 'bg-white border-slate-100 text-slate-400 hover:bg-slate-50'
+                          ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-200'
+                          : 'bg-white border-slate-100 text-slate-400 hover:bg-slate-50'
                         }`}
                     >
                       {m}月
@@ -345,8 +402,8 @@ function App() {
                       key={cat.id}
                       onClick={() => setNewDream({ ...newDream, category: cat.id })}
                       className={`flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all ${newDream.category === cat.id
-                        ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm'
-                        : 'border-slate-50 text-slate-400 hover:bg-slate-50'
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm'
+                          : 'border-slate-50 text-slate-400 hover:bg-slate-50'
                         }`}
                     >
                       <cat.icon size={24} />
