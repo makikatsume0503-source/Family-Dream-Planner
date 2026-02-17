@@ -34,6 +34,7 @@ function App() {
   const [familyProfile, setFamilyProfile] = useState(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [displayYears, setDisplayYears] = useState(20);
 
   // --- Authentication ---
   useEffect(() => {
@@ -112,7 +113,7 @@ function App() {
     const data = [];
     const startFY = familyProfile.startFY || new Date().getFullYear();
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < displayYears; i++) {
       const fy = startFY + i;
 
       const getGrade = (member, currentFY) => {
