@@ -9,9 +9,9 @@ const ROLES = [
     { id: 'student', label: '学生', icon: GraduationCap },
 ];
 
-export default function FamilySetup({ onSave, user }) {
-    const [startFY, setStartFY] = useState(new Date().getMonth() < 3 ? new Date().getFullYear() - 1 : new Date().getFullYear());
-    const [members, setMembers] = useState([
+export default function FamilySetup({ onSave, onCancel, user, initialData }) {
+    const [startFY, setStartFY] = useState(initialData?.startFY || (new Date().getMonth() < 3 ? new Date().getFullYear() - 1 : new Date().getFullYear()));
+    const [members, setMembers] = useState(initialData?.members || [
         { id: crypto.randomUUID(), name: '', birthYear: 1980, birthMonth: 1, role: 'parent' },
         { id: crypto.randomUUID(), name: '', birthYear: 2015, birthMonth: 4, role: 'child' }
     ]);
@@ -170,20 +170,30 @@ export default function FamilySetup({ onSave, user }) {
                         </button>
                     </div>
 
-                    <button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className="w-full bg-indigo-600 text-white font-black py-5 rounded-[1.8rem] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 text-lg mt-8"
-                    >
-                        {isSaving ? (
-                            <span className="animate-pulse">保存中...</span>
-                        ) : (
-                            <>
-                                <Save size={24} />
-                                設定を保存してはじめる
-                            </>
+                    <div className="flex gap-4 mt-8">
+                        {onCancel && (
+                            <button
+                                onClick={onCancel}
+                                className="flex-1 py-5 rounded-[1.8rem] font-bold text-slate-500 hover:bg-slate-100 transition-all"
+                            >
+                                キャンセル
+                            </button>
                         )}
-                    </button>
+                        <button
+                            onClick={handleSave}
+                            disabled={isSaving}
+                            className="flex-1 bg-indigo-600 text-white font-black py-5 rounded-[1.8rem] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 text-lg"
+                        >
+                            {isSaving ? (
+                                <span className="animate-pulse">保存中...</span>
+                            ) : (
+                                <>
+                                    <Save size={24} />
+                                    設定を保存
+                                </>
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

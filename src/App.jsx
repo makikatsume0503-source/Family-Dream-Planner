@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn } from 'lucide-react';
+import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn, Settings } from 'lucide-react';
 import { firebaseConfig, appId } from './config';
 import FamilySetup from './components/FamilySetup';
 
@@ -32,6 +32,7 @@ function App() {
   // Dynamic Family Data
   const [familyProfile, setFamilyProfile] = useState(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   // --- Authentication ---
   useEffect(() => {
