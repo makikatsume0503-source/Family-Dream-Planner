@@ -469,7 +469,7 @@ function App() {
 
       {/* Floating User Info */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md shadow-2xl px-6 py-3 rounded-full border border-slate-100 text-[10px] font-black text-slate-400 tracking-[0.2em]">
-        FAMILY CFO | DASHBOARD | {user?.uid?.slice(0, 8) || 'GUEST'}
+        FinEdit Makikatsume
       </div>
     </div>
   );
