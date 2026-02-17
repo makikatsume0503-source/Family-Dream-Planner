@@ -12,8 +12,8 @@ const ROLES = [
 export default function FamilySetup({ onSave, onCancel, user, initialData }) {
     const [startFY, setStartFY] = useState(initialData?.startFY || (new Date().getMonth() < 3 ? new Date().getFullYear() - 1 : new Date().getFullYear()));
     const [members, setMembers] = useState(initialData?.members || [
-        { id: 'init-1', name: '', birthYear: 1980, birthMonth: 1, role: 'parent' },
-        { id: 'init-2', name: '', birthYear: 2015, birthMonth: 4, role: 'child' }
+        { id: 'init-1', name: '', birthYear: 1980, birthMonth: 1, role: 'parent', gender: 'female' },
+        { id: 'init-2', name: '', birthYear: 1978, birthMonth: 1, role: 'parent', gender: 'male' }
     ]);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -21,7 +21,7 @@ export default function FamilySetup({ onSave, onCancel, user, initialData }) {
 
     const handleAddMember = () => {
         const newId = `mem_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        setMembers([...members, { id: newId, name: '', birthYear: 2020, birthMonth: 1, role: 'child' }]);
+        setMembers([...members, { id: newId, name: '', birthYear: 2020, birthMonth: 1, role: 'child', gender: 'female' }]);
     };
 
     const handleRemoveMember = (id) => {
@@ -150,12 +150,38 @@ export default function FamilySetup({ onSave, onCancel, user, initialData }) {
                                             ))}
                                         </select>
                                     </div>
+
+                                    {/* Gender Selection */}
+                                    <div className="md:col-span-12 mt-2 border-t border-slate-50 pt-2 flex items-center gap-4">
+                                        <span className="text-[10px] font-bold text-slate-300">性別:</span>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => updateMember(member.id, 'gender', 'male')}
+                                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${member.gender === 'male'
+                                                    ? 'bg-blue-50 text-blue-600 border-blue-200'
+                                                    : 'bg-white text-slate-300 border-slate-100 hover:border-slate-200'
+                                                    }`}
+                                            >
+                                                男性 👨
+                                            </button>
+                                            <button
+                                                onClick={() => updateMember(member.id, 'gender', 'female')}
+                                                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${member.gender === 'female'
+                                                    ? 'bg-red-50 text-red-500 border-red-200'
+                                                    : 'bg-white text-slate-300 border-slate-100 hover:border-slate-200'
+                                                    }`}
+                                            >
+                                                女性 👩
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <button
                                     onClick={() => handleRemoveMember(member.id)}
                                     className="text-slate-300 hover:text-red-400 p-2 transition-colors"
                                     disabled={members.length <= 1}
+                                    title="削除"
                                 >
                                     <Trash2 size={18} />
                                 </button>

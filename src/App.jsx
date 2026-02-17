@@ -307,23 +307,29 @@ function App() {
                   {item.members.map((member) => (
                     <div
                       key={member.id}
-                      className={`p-3 rounded-2xl border ${member.role === 'child' || member.role === 'student'
-                        ? 'bg-blue-50/40 border-blue-100'
-                        : 'bg-slate-50 border-slate-100'
+                      className={`p-3 rounded-2xl border transition-colors ${member.gender === 'male'
+                          ? 'bg-blue-50/50 border-blue-100 hover:border-blue-200'
+                          : member.gender === 'female'
+                            ? 'bg-rose-50/50 border-rose-100 hover:border-rose-200'
+                            : 'bg-slate-50 border-slate-100'
                         }`}
                     >
-                      <div className={`text-[9px] font-black uppercase tracking-widest ${member.role === 'child' ? 'text-blue-500' : 'text-slate-400'
+                      <div className={`text-[9px] font-black uppercase tracking-widest flex justify-between items-center ${member.gender === 'male' ? 'text-blue-400' : member.gender === 'female' ? 'text-rose-400' : 'text-slate-400'
                         }`}>
-                        {member.name}
+                        <span>{member.name}</span>
+                        <span className="opacity-50 text-[10px]">{member.gender === 'male' ? '👨' : member.gender === 'female' ? '👩' : ''}</span>
                       </div>
 
                       {member.role === 'child' || member.role === 'student' ? (
                         <>
-                          <div className="text-lg font-black text-blue-700">{member.grade}</div>
-                          <div className="text-[10px] text-blue-400 font-bold">{member.age}歳</div>
+                          <div className={`text-lg font-black ${member.gender === 'male' ? 'text-blue-700' : member.gender === 'female' ? 'text-rose-700' : 'text-slate-700'
+                            }`}>{member.grade}</div>
+                          <div className={`text-[10px] font-bold ${member.gender === 'male' ? 'text-blue-400' : member.gender === 'female' ? 'text-rose-400' : 'text-slate-400'
+                            }`}>{member.age}歳</div>
                         </>
                       ) : (
-                        <div className="text-lg font-black text-slate-700">{member.age}歳になる年</div>
+                        <div className={`text-lg font-black ${member.gender === 'male' ? 'text-blue-900/80' : member.gender === 'female' ? 'text-rose-900/80' : 'text-slate-700'
+                          }`}>{member.age}歳になる年</div>
                       )}
                     </div>
                   ))}
