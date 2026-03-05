@@ -34,7 +34,7 @@ function App() {
   const [familyProfile, setFamilyProfile] = useState(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [displayYears, setDisplayYears] = useState(20);
+  const [displayYears, setDisplayYears] = useState(40);
 
   // --- Authentication ---
   useEffect(() => {
@@ -322,7 +322,7 @@ function App() {
       const promises = newEvents.map(evt => {
         // Only add if within display range (StartFY to StartFY+20)
         const startFY = familyProfile.startFY || new Date().getFullYear();
-        if (evt.fy >= startFY && evt.fy < startFY + 20) {
+        if (evt.fy >= startFY && evt.fy < startFY + 40) {
           return addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'dreams'), {
             ...evt,
             createdAt: new Date().toISOString(),
