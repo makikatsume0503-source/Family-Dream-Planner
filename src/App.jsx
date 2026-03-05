@@ -414,6 +414,21 @@ function App() {
               Demo Mode: Config not set.
             </div>
           )}
+
+          <button
+            onClick={async () => {
+              if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                  await registration.unregister();
+                }
+              }
+              window.location.reload(true);
+            }}
+            className="text-[10px] text-slate-400 font-bold underline cursor-pointer hover:text-slate-600 transition-colors mt-4"
+          >
+            ログイン画面が開かない場合はこちらを押してアプリを再読み込み
+          </button>
         </div>
       </div>
     );
