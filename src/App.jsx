@@ -50,15 +50,32 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // --- Login / Logout Handlers ---
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
+    // In standalone PWA mode (added to home screen), popup often fails or is blocked.
+    // Redirect is generally safer, but has known issues in some iOS versions.
     try {
-      // Use redirect instead of popup for better mobile compatibility
-      await signInWithRedirect(auth, provider);
+      // Check if running as PWA
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+      if (isStandalone) {
+        // Force redirect in PWA mode
+        await signInWithRedirect(auth, provider);
+      } else {
+        // Try popup first in normal browser, fallback to redirect
+        try {
+          await signInWithPopup(auth, provider);
+        } catch (popupError) {
+          if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/cancelled-popup-request') {
+            await signInWithRedirect(auth, provider);
+          } else {
+            throw popupError;
+          }
+        }
+      }
     } catch (error) {
-      console.error("Login redirect failed:", error);
-      alert("ログイン画面への遷移に失敗しました: " + error.message);
+      console.error("Login failed:", error);
+      alert("ログイン処理に失敗しました。(\nError: " + error.message + ")");
     }
   };
 
