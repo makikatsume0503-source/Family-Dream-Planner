@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithRedirect, signOut, onAuthStateChanged, getRedirectResult } from 'firebase/auth';
 import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn, Settings, Edit2, Wand2 } from 'lucide-react';
 import { firebaseConfig, appId } from './config';
@@ -54,12 +54,33 @@ function App() {
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      // Use redirect instead of popup for better mobile compatibility
+      await signInWithRedirect(auth, provider);
     } catch (error) {
-      console.error("Login failed:", error);
-      alert("ログインに失敗しました: " + error.message);
+      console.error("Login redirect failed:", error);
+      alert("ログイン画面への遷移に失敗しました: " + error.message);
     }
   };
+
+  // Handle the redirect result when coming back to the app
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          // User successfully signed in
+          console.log("Successfully signed in via redirect");
+        }
+      } catch (error) {
+        console.error("Redirect login error:", error);
+        // auth/popup-closed-by-user and auth/cancelled-popup-request can sometimes trigger here too
+        if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+          alert("ログインに失敗しました: " + error.message);
+        }
+      }
+    };
+    handleRedirectResult();
+  }, []);
 
   const handleLogout = async () => {
     try {
