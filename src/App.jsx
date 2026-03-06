@@ -36,6 +36,11 @@ function App() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [displayYears, setDisplayYears] = useState(40);
 
+  // PWA Detection
+  const isStandalone = useMemo(() => {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  }, []);
+
   // --- Authentication ---
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -365,13 +370,31 @@ function App() {
             <p className="text-slate-500 text-sm">家族の未来を、みんなで描こう。</p>
           </div>
 
-          <button
-            onClick={handleLogin}
-            className="w-full bg-white border-2 border-slate-100 py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-50 hover:border-slate-200 transition-all group"
-          >
-            <LogIn className="text-slate-400 group-hover:text-indigo-500 transition-colors" size={20} />
-            <span className="font-bold text-slate-600 group-hover:text-slate-800">Googleでログイン</span>
-          </button>
+          {isStandalone ? (
+            <div className="space-y-4">
+              <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-amber-800 text-sm font-bold">
+                📱 ホーム画面アプリからはログイン機能が制限されています。
+              </div>
+              <a
+                href={window.location.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-indigo-600 text-white border-2 border-indigo-600 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all group"
+              >
+                <LogIn className="text-white group-hover:scale-110 transition-transform" size={20} />
+                <span className="font-bold">Safari (ブラウザ) で開いてログイン</span>
+              </a>
+              <p className="text-[10px] text-slate-400 mt-2">※ブラウザでログイン後、再度こちらのアプリを開いて再読み込みボタンを押してください。</p>
+            </div>
+          ) : (
+            <button
+              onClick={handleLogin}
+              className="w-full bg-white border-2 border-slate-100 py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-50 hover:border-slate-200 transition-all group"
+            >
+              <LogIn className="text-slate-400 group-hover:text-indigo-500 transition-colors" size={20} />
+              <span className="font-bold text-slate-600 group-hover:text-slate-800">Googleでログイン</span>
+            </button>
+          )}
 
           {firebaseConfig.apiKey === 'change-me' && (
             <div className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl">
