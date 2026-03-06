@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithRedirect, signInWithPopup, signOut, onAuthStateChanged, getRedirectResult } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
-import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn, Settings, Edit2, Wand2 } from 'lucide-react';
+import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn, Settings, Edit2, Wand2, Mail, Lock } from 'lucide-react';
 import { firebaseConfig, appId } from './config';
 import FamilySetup from './components/FamilySetup';
 
@@ -41,6 +41,13 @@ function App() {
     return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
   }, []);
 
+  // Email Auth State
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [authError, setAuthError] = useState('');
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
   // --- Authentication ---
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -58,13 +65,36 @@ function App() {
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      // In iOS PWA standalone mode, signInWithRedirect often fails due to ITP (Intelligent Tracking Prevention)
-      // and redirect limitations. Popup is sometimes the only viable option, though it requires
-      // the user to accept a "wants to open a new tab" prompt.
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Login failed:", error);
       alert("ログイン処理に失敗しました。(\nError: " + error.message + ")");
+    }
+  };
+
+  const handleEmailAuth = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setIsAuthenticating(true);
+    try {
+      if (isLoginMode) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+      }
+    } catch (error) {
+      console.error("Auth Error:", error);
+      if (error.code === 'auth/email-already-in-use') {
+        setAuthError('このメールアドレスは既に登録されています。');
+      } else if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+        setAuthError('メールアドレスまたはパスワードが間違っています。');
+      } else if (error.code === 'auth/weak-password') {
+        setAuthError('パスワードは6文字以上で入力してください。');
+      } else {
+        setAuthError('認証エラーが発生しました。(' + error.message + ')');
+      }
+    } finally {
+      setIsAuthenticating(false);
     }
   };
 
@@ -370,34 +400,83 @@ function App() {
             <p className="text-slate-500 text-sm">家族の未来を、みんなで描こう。</p>
           </div>
 
-          {isStandalone ? (
-            <div className="space-y-4">
-              <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-amber-800 text-sm font-bold">
-                📱 ホーム画面アプリからはログイン機能が制限されています。
+          <form onSubmit={handleEmailAuth} className="space-y-5 text-left">
+            {authError && (
+              <div className="p-4 bg-red-50 text-red-600 rounded-xl text-xs font-bold ring-1 ring-red-100">
+                {authError}
               </div>
-              <button
-                onClick={() => {
-                  window.open(window.location.href, '_blank');
-                  // Fallback for strict PWA environments that block window.open
-                  setTimeout(() => {
-                    window.location.href = window.location.href;
-                  }, 500);
-                }}
-                className="w-full bg-indigo-600 text-white border-2 border-indigo-600 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all group cursor-pointer relative z-50"
-              >
-                <LogIn className="text-white group-hover:scale-110 transition-transform" size={20} />
-                <span className="font-bold">Safari (ブラウザ) で開いてログイン</span>
-              </button>
-              <p className="text-[10px] text-slate-400 mt-2">※ブラウザでログイン後、再度こちらのアプリを開いて再読み込みボタンを押してください。</p>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-2">メールアドレス</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="text-slate-400" size={18} />
+                  </div>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all"
+                    placeholder="メールアドレスを入力"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-2">パスワード</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="text-slate-400" size={18} />
+                  </div>
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all"
+                    placeholder="パスワード(6文字以上)を入力"
+                  />
+                </div>
+              </div>
             </div>
-          ) : (
+
             <button
-              onClick={handleLogin}
-              className="w-full bg-white border-2 border-slate-100 py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-50 hover:border-slate-200 transition-all group"
+              type="submit"
+              disabled={isAuthenticating}
+              className="w-full bg-indigo-600 text-white font-black py-4 rounded-[1.2rem] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
             >
-              <LogIn className="text-slate-400 group-hover:text-indigo-500 transition-colors" size={20} />
-              <span className="font-bold text-slate-600 group-hover:text-slate-800">Googleでログイン</span>
+              {isAuthenticating ? '処理中...' : (isLoginMode ? 'ログイン' : '新規登録')}
             </button>
+
+            <div className="text-center pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoginMode(!isLoginMode);
+                  setAuthError('');
+                }}
+                className="text-xs text-indigo-600 font-bold hover:underline"
+              >
+                {isLoginMode ? 'はじめての方はこちら(新規登録)' : '既にアカウントをお持ちの方(ログイン)'}
+              </button>
+            </div>
+          </form>
+
+          {!isStandalone && (
+            <div className="pt-6 border-t border-slate-100 mt-6">
+              <p className="text-[10px] text-slate-400 font-bold mb-4">または</p>
+              <button
+                type="button"
+                onClick={handleLogin}
+                className="w-full bg-white border-2 border-slate-100 py-3 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 hover:border-slate-200 transition-all group"
+              >
+                <LogIn className="text-slate-400 group-hover:text-indigo-500 transition-colors" size={18} />
+                <span className="font-bold text-sm text-slate-600 group-hover:text-slate-800">Googleでログイン</span>
+              </button>
+            </div>
           )}
 
           {firebaseConfig.apiKey === 'change-me' && (
