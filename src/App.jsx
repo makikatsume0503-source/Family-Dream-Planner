@@ -375,15 +375,19 @@ function App() {
               <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-amber-800 text-sm font-bold">
                 📱 ホーム画面アプリからはログイン機能が制限されています。
               </div>
-              <a
-                href={window.location.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full bg-indigo-600 text-white border-2 border-indigo-600 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all group"
+              <button
+                onClick={() => {
+                  window.open(window.location.href, '_blank');
+                  // Fallback for strict PWA environments that block window.open
+                  setTimeout(() => {
+                    window.location.href = window.location.href;
+                  }, 500);
+                }}
+                className="w-full bg-indigo-600 text-white border-2 border-indigo-600 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all group cursor-pointer relative z-50"
               >
                 <LogIn className="text-white group-hover:scale-110 transition-transform" size={20} />
                 <span className="font-bold">Safari (ブラウザ) で開いてログイン</span>
-              </a>
+              </button>
               <p className="text-[10px] text-slate-400 mt-2">※ブラウザでログイン後、再度こちらのアプリを開いて再読み込みボタンを押してください。</p>
             </div>
           ) : (
