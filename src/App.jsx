@@ -52,52 +52,16 @@ function App() {
 
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
-    // In standalone PWA mode (added to home screen), popup often fails or is blocked.
-    // Redirect is generally safer, but has known issues in some iOS versions.
     try {
-      // Check if running as PWA
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-      if (isStandalone) {
-        // Force redirect in PWA mode
-        await signInWithRedirect(auth, provider);
-      } else {
-        // Try popup first in normal browser, fallback to redirect
-        try {
-          await signInWithPopup(auth, provider);
-        } catch (popupError) {
-          if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/cancelled-popup-request') {
-            await signInWithRedirect(auth, provider);
-          } else {
-            throw popupError;
-          }
-        }
-      }
+      // In iOS PWA standalone mode, signInWithRedirect often fails due to ITP (Intelligent Tracking Prevention)
+      // and redirect limitations. Popup is sometimes the only viable option, though it requires
+      // the user to accept a "wants to open a new tab" prompt.
+      await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Login failed:", error);
       alert("ログイン処理に失敗しました。(\nError: " + error.message + ")");
     }
   };
-
-  // Handle the redirect result when coming back to the app
-  useEffect(() => {
-    const handleRedirectResult = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          // User successfully signed in
-          console.log("Successfully signed in via redirect");
-        }
-      } catch (error) {
-        console.error("Redirect login error:", error);
-        // auth/popup-closed-by-user and auth/cancelled-popup-request can sometimes trigger here too
-        if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
-          alert("ログインに失敗しました: " + error.message);
-        }
-      }
-    };
-    handleRedirectResult();
-  }, []);
 
   const handleLogout = async () => {
     try {
