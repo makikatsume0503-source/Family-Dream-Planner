@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { Plus, Trash2, Calendar, Target, Heart, GraduationCap, Plane, Wallet, ChevronRight, ChevronLeft, Save, X, Clock, Sun, Moon, LogOut, LogIn, Settings, Edit2, Wand2, Mail, Lock } from 'lucide-react';
 import { firebaseConfig, appId } from './config';
@@ -46,6 +46,7 @@ function App() {
   const [password, setPassword] = useState('');
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [authError, setAuthError] = useState('');
+  const [authSuccess, setAuthSuccess] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   // --- Authentication ---
@@ -75,6 +76,7 @@ function App() {
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     setAuthError('');
+    setAuthSuccess('');
     setIsAuthenticating(true);
     try {
       if (isLoginMode) {
@@ -85,13 +87,36 @@ function App() {
     } catch (error) {
       console.error("Auth Error:", error);
       if (error.code === 'auth/email-already-in-use') {
-        setAuthError('このメールアドレスは既に登録されています。');
+        setAuthError('このメールアドレスは既に登録されています。下の「ログイン」に切り替えてください。');
       } else if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         setAuthError('メールアドレスまたはパスワードが間違っています。');
       } else if (error.code === 'auth/weak-password') {
         setAuthError('パスワードは6文字以上で入力してください。');
       } else {
         setAuthError('認証エラーが発生しました。(' + error.message + ')');
+      }
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    if (!email) {
+      setAuthError('パスワードをリセットするには、まずメールアドレスを入力してください。');
+      return;
+    }
+    setAuthError('');
+    setAuthSuccess('');
+    setIsAuthenticating(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setAuthSuccess('パスワード再設定メールを送信しました。メールのリンクから新しいパスワードを設定してください。');
+    } catch (error) {
+      console.error("Password Reset Error:", error);
+      if (error.code === 'auth/user-not-found') {
+        setAuthError('このメールアドレスは登録されていません。');
+      } else {
+        setAuthError('メールの送信に失敗しました。(' + error.message + ')');
       }
     } finally {
       setIsAuthenticating(false);
@@ -406,6 +431,11 @@ function App() {
                 {authError}
               </div>
             )}
+            {authSuccess && (
+              <div className="p-4 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold ring-1 ring-emerald-100/50">
+                {authSuccess}
+              </div>
+            )}
 
             <div className="space-y-4">
               <div>
@@ -426,7 +456,19 @@ function App() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-2">パスワード</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-bold text-slate-600">パスワード</label>
+                  {isLoginMode && (
+                    <button
+                      type="button"
+                      onClick={handlePasswordReset}
+                      disabled={isAuthenticating}
+                      className="text-[10px] text-indigo-500 hover:text-indigo-700 font-bold transition-colors"
+                    >
+                      パスワードを忘れた方
+                    </button>
+                  )}
+                </div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="text-slate-400" size={18} />
