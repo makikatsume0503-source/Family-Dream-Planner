@@ -412,9 +412,9 @@ function App() {
               }
               window.location.reload(true);
             }}
-            className="text-[10px] text-slate-400 font-bold underline cursor-pointer hover:text-slate-600 transition-colors mt-4"
+            className="w-full mt-6 py-4 px-4 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2 relative z-50 cursor-pointer"
           >
-            ログイン画面が開かない場合はこちらを押してアプリを再読み込み
+            🔄 画面が進まない場合はここをタップ(再読み込み)
           </button>
         </div>
       </div>
@@ -680,7 +680,7 @@ function App() {
       )}
 
       {/* Floating User Info */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md shadow-2xl px-6 py-3 rounded-full border border-slate-100 text-[10px] font-black text-slate-400 tracking-[0.2em]">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md shadow-2xl px-6 py-3 rounded-full border border-slate-100 text-[10px] font-black text-slate-400 tracking-[0.2em] pointer-events-none z-0">
         FinEdit Makikatsume
       </div>
     </div>
