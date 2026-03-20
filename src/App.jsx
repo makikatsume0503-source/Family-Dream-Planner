@@ -576,37 +576,41 @@ function App() {
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans p-4 pb-20">
       {/* Header */}
-      <header className="max-w-4xl mx-auto mb-10 pt-8 flex items-center justify-between relative z-10">
-        <div className="flex-1"></div>
+      <header className="max-w-4xl mx-auto mb-10 pt-8 flex flex-col md:flex-row items-center justify-between relative z-10 gap-6 md:gap-0">
+        <div className="flex-1 hidden md:block"></div>
         <div className="text-center">
           <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-4">
             <Target className="text-indigo-600" size={32} />
           </div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-            家族のドリーム・プランナー <span className="text-indigo-600">年度版</span>
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-normal md:leading-tight">
+            家族のドリーム・プランナー<br className="block md:hidden" />
+            <span className="text-indigo-600 md:ml-2">年度版</span>
           </h1>
         </div>
-        <div className="flex-1 flex justify-end items-center gap-2">
+        <div className="flex-1 flex justify-center md:justify-end items-center gap-3 md:gap-2">
           <button
             onClick={handleAutoGenerateEvents}
-            className="p-3 bg-white text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm rounded-xl transition-all active:scale-95"
+            className="p-3 bg-white text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm rounded-xl transition-all active:scale-95 flex flex-col md:flex-row items-center gap-1 md:gap-0"
             title="ライフイベント自動生成"
           >
             <Wand2 size={20} />
+            <span className="text-[10px] font-bold md:hidden mt-1 text-slate-500">生成</span>
           </button>
           <button
             onClick={() => setIsEditingProfile(true)}
-            className="p-3 bg-white text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm rounded-xl transition-all active:scale-95"
+            className="p-3 bg-white text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm rounded-xl transition-all active:scale-95 flex flex-col md:flex-row items-center gap-1 md:gap-0"
             title="家族設定"
           >
             <Settings size={20} />
+            <span className="text-[10px] font-bold md:hidden mt-1 text-slate-500">修正</span>
           </button>
           <button
             onClick={handleLogout}
-            className="p-3 bg-white text-slate-400 hover:text-slate-600 hover:bg-slate-50 shadow-sm rounded-xl transition-all active:scale-95"
+            className="p-3 bg-white text-slate-400 hover:text-slate-600 hover:bg-slate-50 shadow-sm rounded-xl transition-all active:scale-95 flex flex-col md:flex-row items-center gap-1 md:gap-0"
             title="ログアウト"
           >
             <LogOut size={20} />
+            <span className="text-[10px] font-bold md:hidden mt-1 text-slate-500">ログアウト</span>
           </button>
         </div>
       </header>
