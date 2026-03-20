@@ -12,11 +12,11 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const CATEGORIES = [
-  { id: 'education', label: '教育', icon: GraduationCap, color: 'bg-cyan-700/60' },
-  { id: 'travel', label: '旅行', icon: Plane, color: 'bg-emerald-700/60' },
-  { id: 'financial', label: '家計・投資', icon: Wallet, color: 'bg-amber-600/60' },
-  { id: 'life', label: 'ライフ・夢', icon: Heart, color: 'bg-rose-400/70' },
-  { id: 'career', label: '仕事', icon: Target, color: 'bg-stone-500/70' },
+  { id: 'education', label: '教育', icon: GraduationCap, color: 'bg-blue-500' },
+  { id: 'travel', label: '旅行', icon: Plane, color: 'bg-green-500' },
+  { id: 'financial', label: '家計・投資', icon: Wallet, color: 'bg-yellow-500' },
+  { id: 'life', label: 'ライフ・夢', icon: Heart, color: 'bg-pink-500' },
+  { id: 'career', label: '仕事', icon: Target, color: 'bg-purple-500' },
 ];
 
 // 年度用の月の並び (4月〜翌3月)
@@ -415,14 +415,14 @@ function App() {
   // 1. Not Logged In
   if (!user) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-[1.2rem] shadow-lg shadow-stone-200/30 max-w-md w-full text-center space-y-8">
-          <div className="inline-flex items-center justify-center p-6 bg-stone-50 rounded-full mb-2">
-            <Target className="text-stone-500" size={48} />
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-[2.5rem] shadow-xl max-w-md w-full text-center space-y-8">
+          <div className="inline-flex items-center justify-center p-6 bg-indigo-50 rounded-full mb-2">
+            <Target className="text-indigo-600" size={48} />
           </div>
           <div>
-            <h1 className="text-2xl font-serif tracking-widest font-normal text-stone-800 mb-2">家族のドリーム・プランナー</h1>
-            <p className="text-stone-400 text-sm">家族の未来を、みんなで描こう。</p>
+            <h1 className="text-2xl font-black text-slate-900 mb-2">家族のドリーム・プランナー</h1>
+            <p className="text-slate-500 text-sm">家族の未来を、みんなで描こう。</p>
           </div>
 
           <form onSubmit={handleEmailAuth} className="space-y-5 text-left">
@@ -439,17 +439,17 @@ function App() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-stone-500 mb-2">メールアドレス</label>
+                <label className="block text-xs font-bold text-slate-600 mb-2">メールアドレス</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="text-stone-300" size={18} />
+                    <Mail className="text-slate-400" size={18} />
                   </div>
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 border border-stone-100 rounded-xl leading-5 bg-white placeholder-stone-300 focus:outline-none focus:bg-white focus:ring-2 focus:ring-stone-500 focus:border-stone-500 sm:text-sm transition-all"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all"
                     placeholder="メールアドレスを入力"
                   />
                 </div>
@@ -457,13 +457,13 @@ function App() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-bold text-stone-500">パスワード</label>
+                  <label className="block text-xs font-bold text-slate-600">パスワード</label>
                   {isLoginMode && (
                     <button
                       type="button"
                       onClick={handlePasswordReset}
                       disabled={isAuthenticating}
-                      className="text-[10px] text-stone-500 hover:text-stone-600 font-bold transition-colors"
+                      className="text-[10px] text-indigo-500 hover:text-indigo-700 font-bold transition-colors"
                     >
                       パスワードを忘れた方
                     </button>
@@ -471,14 +471,14 @@ function App() {
                 </div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="text-stone-300" size={18} />
+                    <Lock className="text-slate-400" size={18} />
                   </div>
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 border border-stone-100 rounded-xl leading-5 bg-white placeholder-stone-300 focus:outline-none focus:bg-white focus:ring-2 focus:ring-stone-500 focus:border-stone-500 sm:text-sm transition-all"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all"
                     placeholder="パスワード(6文字以上)を入力"
                   />
                 </div>
@@ -488,7 +488,7 @@ function App() {
             <button
               type="submit"
               disabled={isAuthenticating}
-              className="w-full bg-stone-500 text-white font-serif tracking-widest font-normal py-4 rounded-[1.2rem] hover:bg-stone-600 transition-all shadow-md shadow-stone-200/30 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+              className="w-full bg-indigo-600 text-white font-black py-4 rounded-[1.2rem] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
             >
               {isAuthenticating ? '処理中...' : (isLoginMode ? 'ログイン' : '新規登録')}
             </button>
@@ -500,7 +500,7 @@ function App() {
                   setIsLoginMode(!isLoginMode);
                   setAuthError('');
                 }}
-                className="text-xs text-stone-500 font-bold hover:underline"
+                className="text-xs text-indigo-600 font-bold hover:underline"
               >
                 {isLoginMode ? 'はじめての方はこちら(新規登録)' : '既にアカウントをお持ちの方(ログイン)'}
               </button>
@@ -508,15 +508,15 @@ function App() {
           </form>
 
           {!isStandalone && (
-            <div className="pt-6 border-t border-stone-50 mt-6">
-              <p className="text-[10px] text-stone-300 font-bold mb-4">または</p>
+            <div className="pt-6 border-t border-slate-100 mt-6">
+              <p className="text-[10px] text-slate-400 font-bold mb-4">または</p>
               <button
                 type="button"
                 onClick={handleLogin}
-                className="w-full bg-white border-2 border-stone-50 py-3 rounded-xl flex items-center justify-center gap-3 hover:bg-white hover:border-stone-100 transition-all group"
+                className="w-full bg-white border-2 border-slate-100 py-3 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-50 hover:border-slate-200 transition-all group"
               >
-                <LogIn className="text-stone-300 group-hover:text-stone-500 transition-colors" size={18} />
-                <span className="font-bold text-sm text-stone-500 group-hover:text-stone-700">Googleでログイン</span>
+                <LogIn className="text-slate-400 group-hover:text-indigo-500 transition-colors" size={18} />
+                <span className="font-bold text-sm text-slate-600 group-hover:text-slate-800">Googleでログイン</span>
               </button>
             </div>
           )}
@@ -537,7 +537,7 @@ function App() {
               }
               window.location.reload(true);
             }}
-            className="w-full mt-6 py-4 px-4 bg-stone-50 text-stone-500 hover:bg-stone-100 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2 relative z-50 cursor-pointer"
+            className="w-full mt-6 py-4 px-4 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2 relative z-50 cursor-pointer"
           >
             🔄 画面が進まない場合はここをタップ(再読み込み)
           </button>
@@ -549,8 +549,8 @@ function App() {
   // 2. Loading Profile
   if (isLoadingProfile && !familyProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-pulse text-stone-400 font-serif tracking-widest font-normal tracking-widest text-sm">LOADING PLANNER...</div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-pulse text-indigo-400 font-black tracking-widest text-sm">LOADING PLANNER...</div>
       </div>
     );
   }
@@ -574,43 +574,43 @@ function App() {
 
   // 4. Main App
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-stone-700 font-sans p-4 pb-20">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans p-4 pb-20">
       {/* Header */}
       <header className="max-w-4xl mx-auto mb-10 pt-8 flex flex-col md:flex-row items-center justify-between relative z-10 gap-6 md:gap-0">
         <div className="flex-1 hidden md:block"></div>
         <div className="text-center">
           <div className="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-4">
-            <Target className="text-stone-500" size={32} />
+            <Target className="text-indigo-600" size={32} />
           </div>
-          <h1 className="text-2xl md:text-3xl font-serif tracking-widest font-normal text-stone-800 tracking-widest leading-normal md:leading-tight">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-normal md:leading-tight">
             家族のドリーム・プランナー<br className="block md:hidden" />
-            <span className="text-stone-500 md:ml-2">年度版</span>
+            <span className="text-indigo-600 md:ml-2">年度版</span>
           </h1>
         </div>
         <div className="flex-1 flex justify-center md:justify-end items-center gap-3 md:gap-2">
           <button
             onClick={handleAutoGenerateEvents}
-            className="p-3 bg-white text-stone-300 hover:text-stone-500 hover:bg-stone-50 shadow-sm rounded-xl transition-all active:scale-95 flex flex-col md:flex-row items-center gap-1 md:gap-0"
+            className="p-3 bg-white text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm rounded-xl transition-all active:scale-95 flex flex-col md:flex-row items-center gap-1 md:gap-0"
             title="ライフイベント自動生成"
           >
             <Wand2 size={20} />
-            <span className="text-[10px] font-bold md:hidden mt-1 text-stone-400">生成</span>
+            <span className="text-[10px] font-bold md:hidden mt-1 text-slate-500">生成</span>
           </button>
           <button
             onClick={() => setIsEditingProfile(true)}
-            className="p-3 bg-white text-stone-300 hover:text-stone-500 hover:bg-stone-50 shadow-sm rounded-xl transition-all active:scale-95 flex flex-col md:flex-row items-center gap-1 md:gap-0"
+            className="p-3 bg-white text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm rounded-xl transition-all active:scale-95 flex flex-col md:flex-row items-center gap-1 md:gap-0"
             title="家族設定"
           >
             <Settings size={20} />
-            <span className="text-[10px] font-bold md:hidden mt-1 text-stone-400">修正</span>
+            <span className="text-[10px] font-bold md:hidden mt-1 text-slate-500">修正</span>
           </button>
           <button
             onClick={handleLogout}
-            className="p-3 bg-white text-stone-300 hover:text-stone-500 hover:bg-white shadow-sm rounded-xl transition-all active:scale-95 flex flex-col md:flex-row items-center gap-1 md:gap-0"
+            className="p-3 bg-white text-slate-400 hover:text-slate-600 hover:bg-slate-50 shadow-sm rounded-xl transition-all active:scale-95 flex flex-col md:flex-row items-center gap-1 md:gap-0"
             title="ログアウト"
           >
             <LogOut size={20} />
-            <span className="text-[10px] font-bold md:hidden mt-1 text-stone-400">ログアウト</span>
+            <span className="text-[10px] font-bold md:hidden mt-1 text-slate-500">ログアウト</span>
           </button>
         </div>
       </header>
@@ -624,12 +624,12 @@ function App() {
       {/* Main Timeline */}
       <div className="max-w-4xl mx-auto space-y-6">
         {timelineData.map((item) => (
-          <div key={item.fy} className="bg-white rounded-[1rem] shadow-sm border border-stone-50 overflow-hidden hover:shadow-lg shadow-stone-200/30 transition-all duration-300 group">
+          <div key={item.fy} className="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
             <div className="flex flex-col md:flex-row">
               {/* FY Sidebar */}
-              <div className="bg-[#EBE8E3] text-[#7A7168] p-6 md:w-40 flex flex-col justify-center items-center text-center group-hover:bg-stone-600 transition-colors">
-                <span className="text-sm font-serif tracking-widest font-normal text-stone-500 mb-1 font-serif">FISCAL YEAR</span>
-                <span className="text-3xl font-serif tracking-widest font-normal">{item.fy}</span>
+              <div className="bg-slate-900 text-white p-6 md:w-40 flex flex-col justify-center items-center text-center group-hover:bg-indigo-700 transition-colors">
+                <span className="text-sm font-black text-indigo-400 mb-1">FISCAL YEAR</span>
+                <span className="text-3xl font-black">{item.fy}</span>
                 <span className="text-[10px] font-bold opacity-60 mt-2">年度</span>
                 <div className="text-[9px] mt-4 font-medium opacity-40 leading-tight hidden md:block">
                   {item.fy}/04 - {item.fy + 1}/03
@@ -643,13 +643,13 @@ function App() {
                     <div
                       key={member.id}
                       className={`p-3 rounded-2xl border transition-colors ${member.gender === 'male'
-                        ? 'bg-zinc-50/80 border-zinc-200 hover:border-zinc-300'
+                        ? 'bg-blue-50/50 border-blue-100 hover:border-blue-200'
                         : member.gender === 'female'
-                          ? 'bg-[#FDFBF9] border-[#E8CCD0] hover:border-[#DFB6BC]'
-                          : 'bg-white border-stone-50'
+                          ? 'bg-rose-50/50 border-rose-100 hover:border-rose-200'
+                          : 'bg-slate-50 border-slate-100'
                         }`}
                     >
-                      <div className={`text-[9px] font-serif tracking-widest font-normal uppercase tracking-[0.2em] opacity-80 flex justify-between items-center ${member.gender === 'male' ? 'text-zinc-400' : member.gender === 'female' ? 'text-[#D5AAB0]' : 'text-stone-300'
+                      <div className={`text-[9px] font-black uppercase tracking-widest flex justify-between items-center ${member.gender === 'male' ? 'text-blue-400' : member.gender === 'female' ? 'text-rose-400' : 'text-slate-400'
                         }`}>
                         <span>{member.name}</span>
                         <span className="opacity-50 text-[10px]">{member.gender === 'male' ? '👨' : member.gender === 'female' ? '👩' : ''}</span>
@@ -657,13 +657,13 @@ function App() {
 
                       {member.role === 'child' || member.role === 'student' || member.role === 'grandchild' ? (
                         <>
-                          <div className={`text-lg font-serif tracking-widest font-normal ${member.gender === 'male' ? 'text-zinc-600' : member.gender === 'female' ? 'text-[#A87C82]' : 'text-stone-600'
+                          <div className={`text-lg font-black ${member.gender === 'male' ? 'text-blue-700' : member.gender === 'female' ? 'text-rose-700' : 'text-slate-700'
                             }`}>{member.grade}</div>
-                          <div className={`text-[10px] font-bold ${member.gender === 'male' ? 'text-zinc-400' : member.gender === 'female' ? 'text-[#D5AAB0]' : 'text-stone-300'
+                          <div className={`text-[10px] font-bold ${member.gender === 'male' ? 'text-blue-400' : member.gender === 'female' ? 'text-rose-400' : 'text-slate-400'
                             }`}>{member.age}歳</div>
                         </>
                       ) : (
-                        <div className={`text-lg font-serif tracking-widest font-normal ${member.gender === 'male' ? 'text-zinc-500' : member.gender === 'female' ? 'text-[#87656A]' : 'text-stone-600'
+                        <div className={`text-lg font-black ${member.gender === 'male' ? 'text-blue-900/80' : member.gender === 'female' ? 'text-rose-900/80' : 'text-slate-700'
                           }`}>{member.age}歳になる年</div>
                       )}
                     </div>
@@ -674,33 +674,33 @@ function App() {
                 <div className="space-y-3">
                   {item.yearDreams.map((dream) => {
                     const CatIcon = CATEGORIES.find(c => c.id === dream.category)?.icon || Heart;
-                    const catColor = CATEGORIES.find(c => c.id === dream.category)?.color || 'bg-stone-300';
+                    const catColor = CATEGORIES.find(c => c.id === dream.category)?.color || 'bg-slate-400';
                     return (
-                      <div key={dream.id} className="flex items-center justify-between bg-white border border-stone-50 p-4 rounded-2xl hover:border-stone-200 hover:shadow-sm transition-all">
+                      <div key={dream.id} className="flex items-center justify-between bg-white border border-slate-100 p-4 rounded-2xl hover:border-indigo-200 hover:shadow-sm transition-all">
                         <div className="flex items-center gap-5">
-                          <div className="flex flex-col items-center justify-center min-w-[48px] border-r border-stone-50 pr-4">
-                            <span className="text-stone-500 font-serif tracking-widest font-normal text-xl leading-none">{dream.month}</span>
-                            <span className="text-[9px] font-serif tracking-widest font-normal text-stone-300 uppercase tracking-[0.2em] opacity-80er">MONTH</span>
+                          <div className="flex flex-col items-center justify-center min-w-[48px] border-r border-slate-100 pr-4">
+                            <span className="text-indigo-600 font-black text-xl leading-none">{dream.month}</span>
+                            <span className="text-[9px] font-black text-indigo-300 uppercase tracking-tighter">MONTH</span>
                           </div>
                           <div className={`${catColor} p-2.5 rounded-xl text-white`}>
                             <CatIcon size={20} />
                           </div>
                           <div>
-                            <h4 className="font-bold text-stone-700 leading-tight">{dream.title}</h4>
-                            {dream.description && <p className="text-xs text-stone-400 mt-1">{dream.description}</p>}
+                            <h4 className="font-bold text-slate-800 leading-tight">{dream.title}</h4>
+                            {dream.description && <p className="text-xs text-slate-500 mt-1">{dream.description}</p>}
                           </div>
                         </div>
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleEditDream(dream)}
-                            className="text-stone-100 hover:text-stone-400 transition-colors p-2"
+                            className="text-slate-200 hover:text-indigo-400 transition-colors p-2"
                             title="編集"
                           >
                             <Edit2 size={18} />
                           </button>
                           <button
                             onClick={() => handleDeleteDream(dream.id)}
-                            className="text-stone-100 hover:text-[#D5AAB0] transition-colors p-2"
+                            className="text-slate-200 hover:text-red-400 transition-colors p-2"
                             title="削除"
                           >
                             <Trash2 size={18} />
@@ -712,7 +712,7 @@ function App() {
 
                   <button
                     onClick={() => { setSelectedFY(item.fy); setIsModalOpen(true); }}
-                    className="w-full py-4 border-2 border-dashed border-stone-50 text-stone-200 rounded-2xl hover:border-stone-200 hover:text-stone-400 hover:bg-stone-50/20 transition-all flex items-center justify-center gap-2 text-sm font-bold"
+                    className="w-full py-4 border-2 border-dashed border-slate-100 text-slate-300 rounded-[1.5rem] hover:border-indigo-200 hover:text-indigo-400 hover:bg-indigo-50/20 transition-all flex items-center justify-center gap-2 text-sm font-bold"
                   >
                     <Plus size={20} />
                     {item.fy}年度の計画・夢を追加
@@ -726,20 +726,20 @@ function App() {
 
       {/* Add Dream Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-stone-800/80 backdrop-blur-xl flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-[1.2rem] w-full max-w-lg p-8 shadow-2xl animate-in zoom-in duration-300">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-xl flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl animate-in zoom-in duration-300">
             <div className="flex justify-between items-start mb-8">
               <div>
-                <h2 className="text-2xl font-serif tracking-widest font-normal text-stone-800">
+                <h2 className="text-2xl font-black text-slate-900">
                   {selectedFY}年度の予定
                 </h2>
-                <p className="text-stone-300 text-xs font-bold mt-1 tracking-widest uppercase">
+                <p className="text-slate-400 text-xs font-bold mt-1 tracking-widest uppercase">
                   {editingDreamId ? 'EDITING DREAM' : 'PLANNING NEW DREAM'}
                 </p>
               </div>
               <button
                 onClick={() => { setIsModalOpen(false); setEditingDreamId(null); }}
-                className="bg-stone-50 p-2 rounded-full text-stone-300 hover:text-stone-500 transition-colors"
+                className="bg-slate-100 p-2 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
               >
                 <X size={24} />
               </button>
@@ -748,15 +748,15 @@ function App() {
             <div className="space-y-6">
               {/* Month Selection - FY Order */}
               <div>
-                <label className="block text-[10px] font-serif tracking-widest font-normal text-stone-300 uppercase tracking-[0.2em] opacity-80 mb-4">実行する月を選択</label>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">実行する月を選択</label>
                 <div className="grid grid-cols-4 gap-2">
                   {FY_MONTHS.map((m) => (
                     <button
                       key={m}
                       onClick={() => setNewDream({ ...newDream, month: m })}
-                      className={`py-3 rounded-2xl text-sm font-serif tracking-widest font-normal transition-all border-2 ${newDream.month === m
-                        ? 'bg-stone-500 border-stone-500 text-white shadow-lg shadow-stone-200'
-                        : 'bg-white border-stone-50 text-stone-300 hover:bg-white'
+                      className={`py-3 rounded-2xl text-sm font-black transition-all border-2 ${newDream.month === m
+                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-200'
+                        : 'bg-white border-slate-100 text-slate-400 hover:bg-slate-50'
                         }`}
                     >
                       {m}月
@@ -766,30 +766,30 @@ function App() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-serif tracking-widest font-normal text-stone-300 uppercase tracking-[0.2em] opacity-80 mb-3">夢・予定のタイトル</label>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">夢・予定のタイトル</label>
                 <input
                   type="text"
                   value={newDream.title}
                   onChange={(e) => setNewDream({ ...newDream, title: e.target.value })}
-                  className="w-full bg-white border-2 border-white rounded-2xl p-4 focus:ring-4 focus:ring-stone-50 focus:border-stone-200 outline-none transition-all font-bold text-stone-600"
+                  className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl p-4 focus:ring-4 focus:ring-indigo-50 focus:border-indigo-200 outline-none transition-all font-bold text-slate-700"
                   placeholder="例: 中学校入学、夏休み旅行、NISA積立増額"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-serif tracking-widest font-normal text-stone-300 uppercase tracking-[0.2em] opacity-80 mb-3">カテゴリー</label>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">カテゴリー</label>
                 <div className="grid grid-cols-5 gap-2">
                   {CATEGORIES.map((cat) => (
                     <button
                       key={cat.id}
                       onClick={() => setNewDream({ ...newDream, category: cat.id })}
                       className={`flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all ${newDream.category === cat.id
-                        ? 'border-stone-500 bg-stone-50 text-stone-600 shadow-sm'
-                        : 'border-white text-stone-300 hover:bg-white'
+                        ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-sm'
+                        : 'border-slate-50 text-slate-400 hover:bg-slate-50'
                         }`}
                     >
                       <cat.icon size={24} />
-                      <span className="text-[10px] font-serif tracking-widest font-normal">{cat.label}</span>
+                      <span className="text-[10px] font-black">{cat.label}</span>
                     </button>
                   ))}
                 </div>
@@ -798,7 +798,7 @@ function App() {
               <button
                 onClick={handleSaveDream}
                 disabled={!newDream.title}
-                className="w-full bg-stone-500 text-white font-serif tracking-widest font-normal py-5 rounded-3xl hover:bg-stone-600 transition-all shadow-md shadow-stone-200/30 active:scale-95 disabled:opacity-30 flex items-center justify-center gap-3 text-lg"
+                className="w-full bg-indigo-600 text-white font-black py-5 rounded-[1.8rem] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-95 disabled:opacity-30 flex items-center justify-center gap-3 text-lg"
               >
                 <Save size={24} />
                 {editingDreamId ? '変更を保存' : '年度プランに保存'}
@@ -809,7 +809,7 @@ function App() {
       )}
 
       {/* Floating User Info */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md shadow-2xl px-6 py-3 rounded-full border border-stone-50 text-[10px] font-serif tracking-widest font-normal text-stone-300 tracking-[0.2em] pointer-events-none z-0">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md shadow-2xl px-6 py-3 rounded-full border border-slate-100 text-[10px] font-black text-slate-400 tracking-[0.2em] pointer-events-none z-0">
         FinEdit Makikatsume
       </div>
     </div>
